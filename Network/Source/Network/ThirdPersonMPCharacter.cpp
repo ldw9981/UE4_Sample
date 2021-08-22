@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "ThirdPersonMPProjectile.h"
+#include "GameFramework/GameModeBase.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AThirdPersonMPCharacter
@@ -117,10 +118,12 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	{
 		FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
+		
 		if (CurrentHealth <= 0)
-		{
-			UnPossessed();
-			Destroy();
+		{	
+			AController* ThirdPersonController = GetController();
+			Destroy();	// Destroy makes Controller nullptr
+			GetWorld()->GetAuthGameMode()->RestartPlayerAtTransform(ThirdPersonController, GetActorTransform());
 		}
 	}
 

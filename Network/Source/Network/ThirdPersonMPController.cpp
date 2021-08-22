@@ -10,14 +10,17 @@
 void AThirdPersonMPController::OnPossess(APawn* InPawn)
 {	
 	Super::OnPossess(InPawn);
+	/*	
 	if (HasAuthority())
 	{
 		InPawn->OnEndPlay.AddDynamic(this, &AThirdPersonMPController::OnEndPlayPawn);		
-	}		
+	}
+	*/
 }
 
 void AThirdPersonMPController::OnEndPlayPawn(AActor* Actor, EEndPlayReason::Type EndPlayReason)
 {	
+	/*
 	if (HasAuthority())
 	{
 		FVector spawnLocation = Actor->GetActorLocation();
@@ -29,4 +32,5 @@ void AThirdPersonMPController::OnEndPlayPawn(AActor* Actor, EEndPlayReason::Type
 		Possess(spawned);	
 		//UE_LOG(LogNetwork, Display, TEXT("OnEndPlayPawn %d %d"), GetNetMode(), GetLocalRole());
 	}	
+	*/
 }
