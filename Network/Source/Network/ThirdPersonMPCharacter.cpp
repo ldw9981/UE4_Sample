@@ -11,8 +11,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "ThirdPersonMPProjectile.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/GameModeBase.h"
 
+
+#define  MAX_BULLET 30
 //////////////////////////////////////////////////////////////////////////
 // AThirdPersonMPCharacter
 
@@ -56,6 +59,7 @@ AThirdPersonMPCharacter::AThirdPersonMPCharacter()
 	//Initialize fire rate
 	FireRate = 0.25f;
 	bIsFiringWeapon = false;
+	CurrentBullet = MAX_BULLET;
 
 	GetCharacterMovement()->MaxWalkSpeed = 3000;
 
@@ -95,6 +99,7 @@ void AThirdPersonMPCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 	// Handle firing projectiles
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AThirdPersonMPCharacter::StartFire);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AThirdPersonMPCharacter::Reload);
 }
 
 
@@ -104,12 +109,12 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	if (IsLocallyControlled())
 	{
 		FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
+		UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
 
 		if (CurrentHealth <= 0)
 		{
 			FString deathMessage = FString::Printf(TEXT("You have been killed."));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, deathMessage);
+			UKismetSystemLibrary::PrintString(GetWorld(), deathMessage);
 		}
 	}
 
@@ -117,8 +122,8 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	if (GetLocalRole() == ROLE_Authority)
 	{
 		FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
-		
+		UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
+				
 		if (CurrentHealth <= 0)
 		{	
 			AController* ThirdPersonController = GetController();
@@ -133,12 +138,18 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	*/
 }
 
+void AThirdPersonMPCharacter::OnBulletUpdate()
+{
+	
+}
+
 void AThirdPersonMPCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	//Replicate current health.
 	DOREPLIFETIME(AThirdPersonMPCharacter, CurrentHealth);
+	DOREPLIFETIME(AThirdPersonMPCharacter, CurrentBullet);
 }
 
 void AThirdPersonMPCharacter::SetCurrentHealth(float healthValue)
@@ -159,12 +170,12 @@ float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent
 
 void AThirdPersonMPCharacter::StartFire()
 {
-	if (!bIsFiringWeapon)
+	if (!bIsFiringWeapon && CurrentBullet > 0)
 	{
 		bIsFiringWeapon = true;
 		UWorld* World = GetWorld();
 		World->GetTimerManager().SetTimer(FiringTimer, this, &AThirdPersonMPCharacter::StopFire, FireRate, false);
-		HandleFire();
+		ServerHandleFire();
 	}
 }
 
@@ -173,8 +184,12 @@ void AThirdPersonMPCharacter::StopFire()
 	bIsFiringWeapon = false;
 }
 
-void AThirdPersonMPCharacter::HandleFire_Implementation()
+void AThirdPersonMPCharacter::ServerHandleFire_Implementation()
 {
+	if (CurrentBullet <= 0)
+		return;
+
+	CurrentBullet--;
 	FVector spawnLocation = GetActorLocation() + (GetControlRotation().Vector()  * 100.0f) + (GetActorUpVector() * 50.0f);
 	FRotator spawnRotation = GetControlRotation();
 
@@ -185,9 +200,19 @@ void AThirdPersonMPCharacter::HandleFire_Implementation()
 	AThirdPersonMPProjectile* spawnedProjectile = GetWorld()->SpawnActor<AThirdPersonMPProjectile>(spawnLocation, spawnRotation, spawnParameters);
 }
 
+void AThirdPersonMPCharacter::Reload()
+{
+	ServerReload();
+}
+
 void AThirdPersonMPCharacter::OnRep_CurrentHealth()
 {
 	OnHealthUpdate();
+}
+
+void AThirdPersonMPCharacter::OnRep_CurrentBullet()
+{
+	OnBulletUpdate();
 }
 
 void AThirdPersonMPCharacter::OnResetVR()
@@ -244,4 +269,10 @@ void AThirdPersonMPCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AThirdPersonMPCharacter::ServerReload_Implementation()
+{
+	CurrentBullet = MAX_BULLET;
+	UKismetSystemLibrary::PrintString(GetWorld(), FString(TEXT("Reload")));
 }

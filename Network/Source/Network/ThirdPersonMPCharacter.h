@@ -38,11 +38,20 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentBullet)
+	int CurrentBullet;
+
+	/** A timer handle used for providing the fire rate delay in-between spawns.*/
+	FTimerHandle FiringTimer;
 protected:
 
 	/** RepNotify for changes made to current health.*/
 	UFUNCTION()
 	void OnRep_CurrentHealth();
+
+	/** RepNotify for changes made to current health.*/
+	UFUNCTION()
+	void OnRep_CurrentBullet();
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -78,6 +87,9 @@ protected:
 
 	/** Response to health being updated. Called on the server immediately after modification, and on clients in response to a RepNotify*/
 	void OnHealthUpdate();
+
+	/** Response to health being updated. Called on the server immediately after modification, and on clients in response to a RepNotify*/
+	void OnBulletUpdate();
 public:
 	/** Property replication */
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -124,9 +136,14 @@ protected:
 
 	/** Server function for spawning projectiles.*/
 	UFUNCTION(Server, Reliable)
-	void HandleFire();
+	void ServerHandleFire();
 
-	/** A timer handle used for providing the fire rate delay in-between spawns.*/
-	FTimerHandle FiringTimer;
+
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void Reload();
+
+	/** Server function for spawning projectiles.*/
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 };
 
