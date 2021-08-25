@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ThirdPersonMPProjectile.generated.h"
 
+
+
 UCLASS()
 class NETWORK_API AThirdPersonMPProjectile : public AActor
 {
@@ -34,6 +36,7 @@ public:
 	//The damage dealt by this projectile.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Damage")
 	float Damage;	
+
 
 public:	
 	// Sets default values for this actor's properties

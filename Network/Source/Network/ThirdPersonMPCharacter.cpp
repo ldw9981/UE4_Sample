@@ -55,7 +55,8 @@ AThirdPersonMPCharacter::AThirdPersonMPCharacter()
 	CurrentHealth = MaxHealth;
 
 	//Initialize projectile class
-	ProjectileClass = AThirdPersonMPProjectile::StaticClass();
+	//ProjectileClass = AThirdPersonMPProjectile::StaticClass();
+	
 	//Initialize fire rate
 	FireRate = 0.25f;
 	bIsFiringWeapon = false;
@@ -197,7 +198,8 @@ void AThirdPersonMPCharacter::ServerHandleFire_Implementation()
 	spawnParameters.Instigator = GetInstigator();
 	spawnParameters.Owner = this;
 
-	AThirdPersonMPProjectile* spawnedProjectile = GetWorld()->SpawnActor<AThirdPersonMPProjectile>(spawnLocation, spawnRotation, spawnParameters);
+	AThirdPersonMPProjectile* spawnedProjectile = GetWorld()->SpawnActor<AThirdPersonMPProjectile>(ProjectileClass,spawnLocation, spawnRotation, spawnParameters);
+	check(spawnedProjectile);
 }
 
 void AThirdPersonMPCharacter::Reload()

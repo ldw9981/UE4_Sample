@@ -25,24 +25,11 @@ AThirdPersonMPProjectile::AThirdPersonMPProjectile()
 	RootComponent = SphereComponent;
 
 	//Definition for the Mesh that will serve as our visual representation.
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> DefaultMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
+	//static ConstructorHelpers::FObjectFinder<UStaticMesh> DefaultMesh(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	StaticMesh->SetupAttachment(RootComponent);
 
-	//Set the Static Mesh and its position/scale if we successfully found a mesh asset to use.
-	if (DefaultMesh.Succeeded())
-	{
-		StaticMesh->SetStaticMesh(DefaultMesh.Object);
-		StaticMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -37.5f));
-		StaticMesh->SetRelativeScale3D(FVector(0.75f, 0.75f, 0.75f));
-	}
-
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> DefaultExplosionEffect(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
-	if (DefaultExplosionEffect.Succeeded())
-	{
-		ExplosionEffect = DefaultExplosionEffect.Object;
-	}
-
+		
 	//Definition for the Projectile Movement Component.
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovementComponent->SetUpdatedComponent(SphereComponent);
