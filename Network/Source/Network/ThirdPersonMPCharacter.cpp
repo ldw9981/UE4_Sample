@@ -12,6 +12,7 @@
 #include "Engine/Engine.h"
 #include "ThirdPersonMPProjectile.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "ThirdPersonMPPlayerState.h"
 #include "GameFramework/GameModeBase.h"
 
 
@@ -164,8 +165,30 @@ void AThirdPersonMPCharacter::SetCurrentHealth(float healthValue)
 
 float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	AController* PC = Controller;
+
 	float damageApplied = CurrentHealth - DamageTaken;
 	SetCurrentHealth(damageApplied);
+
+	if (CurrentHealth <= 0.0f)
+	{
+		FString Message = FString::Printf(TEXT("TakeDamage %s %s"), *EventInstigator->GetName(), *DamageCauser->GetName());
+		
+		UKismetSystemLibrary::PrintString(GetWorld(), Message);
+
+		
+		AThirdPersonMPPlayerState* PS = PC->GetPlayerState<AThirdPersonMPPlayerState>();
+		if (PS)
+		{
+			PS->Death++;
+		}
+
+		AThirdPersonMPPlayerState* OtherPS = EventInstigator->GetPlayerState<AThirdPersonMPPlayerState>();
+		if (OtherPS)
+		{
+			OtherPS->Kill++;
+		}
+	}
 	return damageApplied;
 }
 
