@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnKDASignature, AThirdPersonMPPlayerState*,PlayerState, int, Kill, int, Death);
+
 UCLASS()
 class NETWORK_API AThirdPersonMPPlayerState : public APlayerState
 {
@@ -18,15 +21,20 @@ public:
 	AThirdPersonMPPlayerState();
 public:
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", ReplicatedUsing = OnRep_KDA)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", ReplicatedUsing = OnRep_Kill)
 	int Kill;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", ReplicatedUsing = OnRep_KDA)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score", ReplicatedUsing = OnRep_Death)
 	int Death;
+
+	UPROPERTY(EditAnywhere, Category = "Score", BlueprintAssignable)
+	FOnKDASignature OnKDA;
 
 protected:
 	UFUNCTION()
-	void OnRep_KDA();
+	void OnRep_Kill();
+	UFUNCTION()
+	void OnRep_Death();
 
 public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

@@ -75,7 +75,7 @@ void AThirdPersonMPProjectile::OnProjectileImpact(UPrimitiveComponent* HitCompon
 void AThirdPersonMPProjectile::MulticastOnProjectileImpactEffect_Implementation(FVector Location)
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffect, Location, FRotator::ZeroRotator, true, EPSCPoolMethod::AutoRelease);
-	UE_LOG(LogNetwork, Display, TEXT("MulticastOnProjectileImpactEffect_Implementation %d %d"), GetNetMode(), GetLocalRole());
+	//UE_LOG(LogNetwork, Display, TEXT("MulticastOnProjectileImpactEffect_Implementation %d %d"), GetNetMode(), GetLocalRole());
 }
 
 // Called every frame

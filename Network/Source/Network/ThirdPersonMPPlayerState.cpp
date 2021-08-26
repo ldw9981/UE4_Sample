@@ -11,12 +11,22 @@ AThirdPersonMPPlayerState::AThirdPersonMPPlayerState()
 	Death = 0;
 }
 
-void AThirdPersonMPPlayerState::OnRep_KDA()
+void AThirdPersonMPPlayerState::OnRep_Kill()
 {
 	FString Message = FString::Printf(TEXT("%s OnRep_KDA %d %d"),*this->GetName(), Kill, Death);
 
 	UKismetSystemLibrary::PrintString(GetWorld(), Message);
+	OnKDA.Broadcast(this, Kill, Death);
 }
+
+void AThirdPersonMPPlayerState::OnRep_Death()
+{
+	FString Message = FString::Printf(TEXT("%s OnRep_KDA %d %d"), *this->GetName(), Kill, Death);
+
+	UKismetSystemLibrary::PrintString(GetWorld(), Message);
+	OnKDA.Broadcast(this, Kill, Death);
+}
+
 void AThirdPersonMPPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
