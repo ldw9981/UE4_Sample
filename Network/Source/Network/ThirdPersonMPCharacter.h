@@ -145,5 +145,10 @@ protected:
 	/** Server function for spawning projectiles.*/
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
+public:	
+	virtual void OnRep_PlayerState();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnRepPlayerState();
 };
 

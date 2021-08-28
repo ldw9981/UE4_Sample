@@ -301,3 +301,9 @@ void AThirdPersonMPCharacter::ServerReload_Implementation()
 	CurrentBullet = MAX_BULLET;
 	UKismetSystemLibrary::PrintString(GetWorld(), FString(TEXT("Reload")));
 }
+
+void AThirdPersonMPCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	OnRepPlayerState();
+}

@@ -3,6 +3,7 @@
 #include "ThirdPersonMPGameMode.h"
 #include "ThirdPersonMPCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GameFramework/Controller.h"
 
 AThirdPersonMPGameMode::AThirdPersonMPGameMode()
 {
@@ -18,4 +19,14 @@ AThirdPersonMPGameMode::AThirdPersonMPGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+}
+
+void AThirdPersonMPGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+}
+
+void AThirdPersonMPGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
 }
