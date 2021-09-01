@@ -10,7 +10,7 @@ UCLASS(config=Game)
 class AThirdPersonMPCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+public:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -31,14 +31,14 @@ public:
 
 protected:
 	/** The player's maximum health. This is the highest that their health can be, and the value that their health starts at when spawned.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player")
 	float MaxHealth;
 
 	/** The player's current health. When reduced to 0, they are considered dead.*/
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player", ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentBullet)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player" ,ReplicatedUsing = OnRep_CurrentBullet)
 	int CurrentBullet;
 
 	/** A timer handle used for providing the fire rate delay in-between spawns.*/
@@ -116,6 +116,14 @@ public:
 
 protected:
 
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<class UUserWidget> WidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	UUserWidget* WidgetInstance;
+
+
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay|Projectile")
 	TSubclassOf<class AThirdPersonMPProjectile> ProjectileClass;
 
@@ -150,5 +158,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnRepPlayerState();
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 };
 

@@ -3,3 +3,7 @@
 
 #include "ThirdPersonMPGameState.h"
 
+void AThirdPersonMPGameState::MulticastBlueZoneNotifyTime_Implementation(int Min)
+{
+
+}

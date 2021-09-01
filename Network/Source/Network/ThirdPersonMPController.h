@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "ThirdPersonMPController.generated.h"
 
+class UUserWidget;
+
 /**
  * 
  */
@@ -14,11 +16,8 @@ class NETWORK_API AThirdPersonMPController : public APlayerController
 {
 	GENERATED_BODY()
 	
+
 public:
 
-	UFUNCTION(Category = "Controller")
-	virtual void OnPossess(APawn* InPawn) override;
 
-	UFUNCTION(Category = "Controller")
-	void OnEndPlayPawn( AActor* Actor, EEndPlayReason::Type EndPlayReason);
 };

@@ -14,7 +14,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "ThirdPersonMPPlayerState.h"
 #include "GameFramework/GameModeBase.h"
-
+#include "UMG/Public/Blueprint/UserWidget.h"
 
 #define  MAX_BULLET 30
 //////////////////////////////////////////////////////////////////////////
@@ -306,4 +306,29 @@ void AThirdPersonMPCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	OnRepPlayerState();
+}
+
+void AThirdPersonMPCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	APlayerController* PC = Cast<APlayerController>(GetController());
+
+	if (!UKismetSystemLibrary::IsServer(GetWorld()) && PC !=nullptr)
+	{
+		if (WidgetClass)
+		{
+			WidgetInstance = CreateWidget(PC, WidgetClass);
+			WidgetInstance->AddToViewport();
+		}
+	}	
+}
+
+void AThirdPersonMPCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (WidgetInstance)
+	{
+		WidgetInstance->RemoveFromParent();
+	}
+	Super::EndPlay(EndPlayReason);
 }
