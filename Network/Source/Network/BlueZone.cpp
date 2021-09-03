@@ -12,25 +12,44 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "ThirdPersonMPController.h"
+#include "Network.h"
 
-ABlueZone::ABlueZone(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{	
+ABlueZone::ABlueZone()
+{
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> AssetMesh(TEXT("StaticMesh'/Engine/BasicShapes/Cylinder'"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	Mesh->SetStaticMesh(AssetMesh.Object);	
 	SetRootComponent(Mesh);
 
-	MeshScaleTo1Unit = 1.0f / MeshRadius;
-	SetRadius(CurrentRadius);
+	MeshRadius = 50.f;
+	DifferenceRadius = 0.0f;
+	MeshScaleTo1Unit = 1.0f / MeshRadius;			// 1Unit 으로 만드는 스케일값
+	TargetRadius = 0.0f;
+	TargetCenter = FVector(0.0f,0.0f,0.0f);
+	CurrentCenter = FVector(0.0f, 0.0f, 0.0f);
+	InterpSpeedRadius = 0.0f;
+	InterpSpeedCenter = 0.0f;
+	PhazeTime = 5.0f;
+	bZoneMove = false;
+	PhazeIndex = 0;
+
+	SetRadius(10000.0f);
 }
 
 // Called when the game starts or when spawned
 void ABlueZone::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentCenter = GetActorLocation();
+
+	
+	SetRadius(CurrentRadius);
+
+
 	if (UKismetSystemLibrary::IsServer(GetWorld()))
 	{
 		//1초 주기
@@ -48,11 +67,7 @@ void ABlueZone::BeginPlay()
 void ABlueZone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (PhazeTime <= 0.0f || CurrentRadius <= 1.0f)
-	{
-		return;
-	}
+	
 
 	AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	PhazeTime -= DeltaTime;
@@ -62,42 +77,43 @@ void ABlueZone::Tick(float DeltaTime)
 	}
 
 
-	if (bZoneMove)
-	{
-		CurrentRadius = FMath::FInterpConstantTo(CurrentRadius, TargetRadius, DeltaTime, InterpSpeedRadius);
-		CurrentCenter = FMath::VInterpConstantTo(CurrentCenter, TargetCenter, DeltaTime, InterpSpeedCenter);
-		SetRadius(CurrentRadius);
-		SetActorLocation(CurrentCenter);
-
-		// 이동중일때 갱신
-
-		if (PC && PC->IsLocalPlayerController())
+		if (PhazeTime <= 0.0f)
 		{
-			float Progress = 1 - ((CurrentRadius - TargetRadius) / DifferenceRadius);
-			//PC->UI_SetSafeZoneProgress(Progress);
-		}
-	}
+			PhazeTime = 0;
 
-	if (PhazeTime <= 0.0f)
-	{
-		PhazeTime = 0;
-
-		if (GetWorld()->IsServer())
-		{
-			if (!bZoneMove)
+			if (GetWorld()->IsServer())
 			{
-				float PrevRadius = CurrentRadius;
-				float NewRadius = CurrentRadius * 0.5f;
-				FVector NewCenter = GetRandomLocationInRadius(CurrentCenter, PrevRadius - NewRadius);
+				if (!bZoneMove)
+				{
+					float PrevRadius = CurrentRadius;
+					float NewRadius = CurrentRadius * 0.5f;
+					FVector NewTargetCenter = GetLocationRandomCircle(CurrentCenter, PrevRadius - NewRadius);
 
-				S2A_SetZoneMovePhaze(60, NewCenter, NewRadius);
-			}
-			else
-			{
-				S2A_SetWaitPhaze(60);
+					S2A_SetZoneMovePhaze(5, NewTargetCenter, NewRadius);
+				}
+				else
+				{
+					S2A_SetWaitPhaze(5);
+				}
 			}
 		}
-	}
+
+		if (bZoneMove)
+		{
+			CurrentRadius = FMath::FInterpConstantTo(CurrentRadius, TargetRadius, DeltaTime, InterpSpeedRadius);
+			CurrentCenter = FMath::VInterpConstantTo(CurrentCenter, TargetCenter, DeltaTime, InterpSpeedCenter);
+			SetRadius(CurrentRadius);
+			SetActorLocation(CurrentCenter);
+
+			// 이동중일때 갱신
+
+			if (PC && PC->IsLocalPlayerController())
+			{
+				float Progress = 1 - ((CurrentRadius - TargetRadius) / DifferenceRadius);
+				//PC->UI_SetSafeZoneProgress(Progress);
+			}
+		}
+
 }
 
 void ABlueZone::SetRadius(float NewRadius)
@@ -137,7 +153,8 @@ void ABlueZone::PainOutside()
 		FVector ZoneLocationXY = GetActorLocation();
 		ZoneLocationXY.Z = 0;
 
-		if (FVector(ActorLocationXY - ZoneLocationXY).Size() <= CurrentRadius)
+		float Size = FVector(ActorLocationXY - ZoneLocationXY).Size();
+		if ( Size <= CurrentRadius)
 		{
 			continue;
 		}
@@ -157,12 +174,16 @@ void ABlueZone::S2A_SetZoneMovePhaze_Implementation(float NewPageTime, FVector N
 	TargetCenter = NewCenter;
 
 	DifferenceRadius = (CurrentRadius - TargetRadius);
-	InterpSpeedRadius = DifferenceRadius / PhazeTime;		// 1초에 줄어야할 반지름 크기
-	//UE_LOG(LogClass, Warning, TEXT(" %f, %f , %f"), CurrentRadius, TargetRadius, PhazeTime);
+	InterpSpeedRadius = DifferenceRadius / PhazeTime;		// 1초에 줄어야할 반지름 크기	
 	InterpSpeedCenter = FVector(TargetCenter - CurrentCenter).Size() / PhazeTime;	//1초에 이동해야할 크기
+	
+	if (HasAuthority())
+	{
+		UE_LOG(LogNetwork, Display, TEXT("%f,%f  %f,%f       %f, %f, %f"), CurrentCenter.X, CurrentCenter.Y, TargetCenter.X, TargetCenter.Y, CurrentRadius, TargetRadius, PhazeTime);
+	}
+	
+	
 //	UE_LOG(LogClass, Warning, TEXT("InterpSpeedRadius %f,InterpSpeedCenter %f"), InterpSpeedRadius, InterpSpeedCenter);
-
-
 }
 
 void ABlueZone::S2A_SetWaitPhaze_Implementation(float NewPageTime)
@@ -177,12 +198,11 @@ void ABlueZone::S2A_SetWaitPhaze_Implementation(float NewPageTime)
 	}
 }
 
-FVector ABlueZone::GetRandomLocationInRadius(const FVector & Origin, const float Radius)
+FVector ABlueZone::GetLocationRandomCircle(const FVector & Origin, const float Radius)
 {
-	const float RandomAngle = 2.f * PI * FMath::FRand();
-	const float U = FMath::FRand() + FMath::FRand();
-	const float RandomRadius = Radius * (U > 1 ? 2.f - U : U);
-	const FVector RandomOffset(FMath::Cos(RandomAngle) * RandomRadius, FMath::Sin(RandomAngle) * RandomRadius, 0);
+	const float RandomAngle = 2.f * PI * FMath::FRand();  /* 0.0 ~ 2PI.0 */
+
+	const FVector RandomOffset(FMath::Cos(RandomAngle) * Radius, FMath::Sin(RandomAngle) * Radius, 0);
 	FVector RandomLocationInRadius = Origin + RandomOffset;
 	return RandomLocationInRadius;
 }

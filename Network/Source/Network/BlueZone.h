@@ -6,6 +6,28 @@
 #include "GameFramework/Actor.h"
 #include "BlueZone.generated.h"
 
+USTRUCT(BlueprintType)
+struct NETWORK_API FBlueZonePhaze
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	float DelayTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	float PhazeTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	float PhazeRadius;
+
+	FBlueZonePhaze()
+		:DelayTime(0.0f)
+		,PhazeTime(0.0f)
+		,PhazeRadius(0.0f)
+	{
+
+	}
+};
 
 UCLASS()
 class NETWORK_API ABlueZone : public AActor
@@ -14,34 +36,32 @@ class NETWORK_API ABlueZone : public AActor
 	
 public:	
 	// Sets default values for this actor's properties
-	//ABlueZone();
-
-	/** Constructor for AActor that takes an ObjectInitializer for backward compatibility */
-	ABlueZone(const FObjectInitializer& ObjectInitializer);
-
+	ABlueZone();
 private:
-	/** Called from the constructor to initialize the class to its default settings */
-	void InitializeDefaults();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
 	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	float CurrentRadius = 10000.0f;
+	float CurrentRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	float MeshRadius = 200;
+	float MeshRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	TArray<FBlueZonePhaze> PhazeInfos; 
 
 	float DifferenceRadius = 0.0f;
-	float MeshScaleTo1Unit = 0.0f;
+	float MeshScaleTo1Unit = 0.0f;		// 1Unit 으로 만드는 스케일값
 	float TargetRadius = 0.0f;
 	FVector TargetCenter;
 	FVector CurrentCenter;
 	float InterpSpeedRadius = 0.0f;
 	float InterpSpeedCenter = 0.0f;
-	float PhazeTime = 5.0f;
+	float PhazeTime;
 	bool bZoneMove = false;
+	int PhazeIndex;
 
 	FTimerHandle PainTimer;
 protected:
@@ -63,6 +83,6 @@ public:
 	void S2A_SetWaitPhaze(float NewPageTime);
 	void S2A_SetWaitPhaze_Implementation(float NewPageTime);
 
-	FVector GetRandomLocationInRadius(const FVector & Origin, const float Radius);
+	FVector GetLocationRandomCircle(const FVector & Origin, const float Radius);
 
 };

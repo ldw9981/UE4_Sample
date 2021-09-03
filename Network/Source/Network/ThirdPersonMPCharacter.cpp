@@ -172,7 +172,16 @@ float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent
 
 	if (CurrentHealth <= 0.0f)
 	{
-		FString Message = FString::Printf(TEXT("TakeDamage %s %s"), *EventInstigator->GetName(), *DamageCauser->GetName());
+		FString Message;
+		if (EventInstigator)
+		{
+			Message = FString::Printf(TEXT("TakeDamage %s %s"), *EventInstigator->GetName(), *DamageCauser->GetName());
+		}
+		else
+		{
+			Message = FString::Printf(TEXT("TakeDamage %s"), *DamageCauser->GetName());
+		}
+		
 		
 		UKismetSystemLibrary::PrintString(GetWorld(), Message);
 
@@ -183,10 +192,14 @@ float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent
 			PS->Death++;
 		}
 
-		AThirdPersonMPPlayerState* OtherPS = EventInstigator->GetPlayerState<AThirdPersonMPPlayerState>();
-		if (OtherPS)
+
+		if (EventInstigator)
 		{
-			OtherPS->Kill++;
+			AThirdPersonMPPlayerState* OtherPS = EventInstigator->GetPlayerState<AThirdPersonMPPlayerState>();
+			if (OtherPS)
+			{
+				OtherPS->Kill++;
+			}
 		}
 	}
 	return damageApplied;
