@@ -7,27 +7,49 @@
 #include "BlueZone.generated.h"
 
 USTRUCT(BlueprintType)
-struct NETWORK_API FBlueZonePhaze
+struct NETWORK_API FBlueZoneCommonInfo
 {
 	GENERATED_USTRUCT_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	float DelayTime;
+	float DelayDuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	float PhazeTime;
+	float MoveDuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	float PhazeRadius;
+	float CircleRadius;
 
-	FBlueZonePhaze()
-		:DelayTime(0.0f)
-		,PhazeTime(0.0f)
-		,PhazeRadius(0.0f)
+	FBlueZoneCommonInfo()
+		: DelayDuration(0.0f)
+		, MoveDuration(0.0f)
+		, CircleRadius(0.0f)
 	{
 
 	}
 };
+
+USTRUCT(BlueprintType)
+struct NETWORK_API FBlueZoneServerInfo
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	int PhazeIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
+	FVector CircleCenter;
+
+
+	FBlueZoneServerInfo()
+		: PhazeIndex(-1)
+		, CircleCenter(0.0f, 0.0f, 0.0f)
+	{
+
+	}
+};
+
+
 
 UCLASS()
 class NETWORK_API ABlueZone : public AActor
@@ -50,39 +72,48 @@ public:
 	float MeshRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
-	TArray<FBlueZonePhaze> PhazeInfos; 
+	TArray<FBlueZoneCommonInfo> CommonInfos;
 
-	float DifferenceRadius = 0.0f;
-	float MeshScaleTo1Unit = 0.0f;		// 1Unit 으로 만드는 스케일값
-	float TargetRadius = 0.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone", ReplicatedUsing = OnRep_PhazeInfo)
+	FBlueZoneServerInfo ServerInfo;
+
+	float StartTime;
+	float DelayTime;
+	float MoveTime;
+
+	float DifferenceRadius;
+	float MeshScaleTo1Unit;		// 1Unit 으로 만드는 스케일값
+	float TargetRadius;
 	FVector TargetCenter;
 	FVector CurrentCenter;
-	float InterpSpeedRadius = 0.0f;
-	float InterpSpeedCenter = 0.0f;
+	float InterpSpeedRadius;
+	float InterpSpeedCenter;
 	float PhazeTime;
-	bool bZoneMove = false;
-	int PhazeIndex;
+	bool bZoneMove;
+
+
+	float DelayCompleteTime;	// 대기 완료 시간
+	float MoveCompleteTime;		// 이동 완료 시간
+
 
 	FTimerHandle PainTimer;
-protected:
+public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	/** Property replication */
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+public:
 	void SetRadius(float NewRadius);
 	void PainOutside();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void S2A_SetZoneMovePhaze(float NewPageTime, FVector NewCenter, float NewTargetRadius);
-	void S2A_SetZoneMovePhaze_Implementation(float NewPageTime, FVector NewCenter, float NewTargetRadius);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void S2A_SetWaitPhaze(float NewPageTime);
-	void S2A_SetWaitPhaze_Implementation(float NewPageTime);
-
 	FVector GetLocationRandomCircle(const FVector & Origin, const float Radius);
+	
+	UFUNCTION()
+	void OnRep_PhazeInfo();
 
+	bool UpdateCurrentPhazeInfo();
 };

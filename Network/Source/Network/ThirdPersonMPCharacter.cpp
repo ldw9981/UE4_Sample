@@ -110,8 +110,8 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	//Client-specific functionality
 	if (IsLocallyControlled())
 	{
-		FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
-		UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
+		//FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
+		//UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
 
 		if (CurrentHealth <= 0)
 		{
@@ -123,8 +123,8 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 	//Server-specific functionality
 	if (GetLocalRole() == ROLE_Authority)
 	{
-		FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
-		UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
+		//FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
+		//UKismetSystemLibrary::PrintString(GetWorld(), healthMessage);
 				
 		if (CurrentHealth <= 0)
 		{	
@@ -172,6 +172,7 @@ float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent
 
 	if (CurrentHealth <= 0.0f)
 	{
+		/*
 		FString Message;
 		if (EventInstigator)
 		{
@@ -184,7 +185,7 @@ float AThirdPersonMPCharacter::TakeDamage(float DamageTaken, struct FDamageEvent
 		
 		
 		UKismetSystemLibrary::PrintString(GetWorld(), Message);
-
+		*/
 		
 		AThirdPersonMPPlayerState* PS = PC->GetPlayerState<AThirdPersonMPPlayerState>();
 		if (PS)
