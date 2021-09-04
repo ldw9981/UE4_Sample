@@ -54,6 +54,7 @@ void ABlueZone::BeginPlay()
 		{
 			ServerInfo.PhazeIndex=0;
 			ServerInfo.CircleCenter = GetLocationRandomCircle(CurrentCenter, CurrentRadius - CommonInfos[ServerInfo.PhazeIndex].CircleRadius);
+			ServerInfo.StartTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
 			if (UpdateCurrentPhazeInfo())
 			{
 				SetActorTickEnabled(true);
@@ -79,6 +80,7 @@ void ABlueZone::Tick(float DeltaTime)
 			{
 				ServerInfo.PhazeIndex++;
 				ServerInfo.CircleCenter = GetLocationRandomCircle(CurrentCenter, CurrentRadius - CommonInfos[ServerInfo.PhazeIndex].CircleRadius);
+				ServerInfo.StartTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
 				if (UpdateCurrentPhazeInfo())
 				{
 					SetActorTickEnabled(true);
@@ -95,56 +97,28 @@ void ABlueZone::Tick(float DeltaTime)
 			SetRadius(CurrentRadius);
 			SetActorLocation(CurrentCenter);
 		}
-	}	
-	PrevServerTime = ServerTime;
-	
-	/*
-	AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	PhazeTime -= DeltaTime;
-	if (PC && PC->IsLocalPlayerController())
-	{
-//		PC->UI_SetPhazeTime(PhazeTime);
-	}
 
-
-		if (PhazeTime <= 0.0f)
+		if (HasAuthority() == false)
 		{
-			PhazeTime = 0;
-
-			if (GetWorld()->IsServer())
-			{
-				if (!bZoneMove)
-				{
-					float PrevRadius = CurrentRadius;
-					float NewRadius = CurrentRadius * 0.5f;
-					FVector NewTargetCenter = GetLocationRandomCircle(CurrentCenter, PrevRadius - NewRadius);
-
-					//S2A_SetZoneMovePhaze(5, NewTargetCenter, NewRadius);
-
-				}
-				else
-				{
-					//S2A_SetWaitPhaze(5);
-				}
-			}
-		}
-
-		if (bZoneMove)
-		{
-			CurrentRadius = FMath::FInterpConstantTo(CurrentRadius, TargetRadius, DeltaTime, InterpSpeedRadius);
-			CurrentCenter = FMath::VInterpConstantTo(CurrentCenter, TargetCenter, DeltaTime, InterpSpeedCenter);
-			SetRadius(CurrentRadius);
-			SetActorLocation(CurrentCenter);
-
-			// 이동중일때 갱신
-
+			AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 			if (PC && PC->IsLocalPlayerController())
 			{
-				float Progress = 1 - ((CurrentRadius - TargetRadius) / DifferenceRadius);
-				//PC->UI_SetSafeZoneProgress(Progress);
+				BlueProgress = 1 - ((CurrentRadius - CommonInfos[ServerInfo.PhazeIndex].CircleRadius) / DifferenceRadius);				
 			}
 		}
-		*/
+	}	
+	else
+	{
+		if (HasAuthority() == false)
+		{
+			AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+			if (PC && PC->IsLocalPlayerController())
+			{				
+				RemainTime = DelayCompleteTime - ServerTime;
+			}
+		}
+	}
+	PrevServerTime = ServerTime;
 }
 
 void ABlueZone::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -162,8 +136,6 @@ void ABlueZone::SetRadius(float NewRadius)
 
 void ABlueZone::PainOutside()
 {
-
-
 	for (auto Iter = GetWorld()->GetPlayerControllerIterator(); Iter; ++Iter)
 	{
 		AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(*Iter);
@@ -176,15 +148,7 @@ void ABlueZone::PainOutside()
 		{
 			continue;
 		}
-
-		/*
-		if (Character->IsDead())
-		{
-			continue;
-		}
-		*/
-
-
+		
 		FVector ActorLocationXY = Character->GetActorLocation();
 		ActorLocationXY.Z = 0;
 		FVector ZoneLocationXY = GetActorLocation();
@@ -227,12 +191,14 @@ bool ABlueZone::UpdateCurrentPhazeInfo()
 		return false;
 	}
 
-	float StartTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
-	DelayCompleteTime = StartTime + CommonInfos[index].DelayDuration;
+	DelayCompleteTime = ServerInfo.StartTime + CommonInfos[index].DelayDuration;
 	MoveCompleteTime = DelayCompleteTime + CommonInfos[index].MoveDuration;
 
 	DifferenceRadius = (CurrentRadius - CommonInfos[index].CircleRadius);
 	InterpSpeedRadius = DifferenceRadius / CommonInfos[index].MoveDuration;		// 1초에 줄어야할 반지름 크기	
 	InterpSpeedCenter = FVector(ServerInfo.CircleCenter - CurrentCenter).Size() / CommonInfos[index].MoveDuration;	//1초에 이동해야할 크기	
+	
+	FString Message = FString::Printf(TEXT("UpdateCurrentPhazeInfo %f %f"), GetWorld()->GetGameState()->GetServerWorldTimeSeconds(), ServerInfo.StartTime);
+	UKismetSystemLibrary::PrintString(GetWorld(), Message);
 	return true;
 }

@@ -44,10 +44,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
 	FVector CircleCenter;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
+	float StartTime;
 
 	FBlueZoneServerInfo()
 		: PhazeIndex(-1)
 		, CircleCenter(0.0f, 0.0f, 0.0f)
+		, StartTime(0.0f)
 	{
 
 	}
@@ -81,6 +84,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone", ReplicatedUsing = OnRep_PhazeInfo)
 	FBlueZoneServerInfo ServerInfo;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
+	float BlueProgress;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone")
+	float RemainTime;
 
 	float DelayCompleteTime;	// 대기 완료 시간
 	float MoveCompleteTime;		// 이동 완료 시간
@@ -92,6 +100,7 @@ public:
 	FVector CurrentCenter;
 	float InterpSpeedRadius;
 	float InterpSpeedCenter;
+
 	FTimerHandle PainTimer;
 public:
 	// Called when the game starts or when spawned
