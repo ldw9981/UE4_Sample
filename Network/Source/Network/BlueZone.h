@@ -20,10 +20,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
 	float CircleRadius;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlueZone")
+	float Damage;
+
 	FBlueZoneCommonInfo()
 		: DelayDuration(0.0f)
 		, MoveDuration(0.0f)
 		, CircleRadius(0.0f)
+		, Damage(1.0f)
 	{
 
 	}
@@ -77,25 +81,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BlueZone", ReplicatedUsing = OnRep_PhazeInfo)
 	FBlueZoneServerInfo ServerInfo;
 
-	float StartTime;
-	float DelayTime;
-	float MoveTime;
-
-	float DifferenceRadius;
-	float MeshScaleTo1Unit;		// 1Unit 으로 만드는 스케일값
-	float TargetRadius;
-	FVector TargetCenter;
-	FVector CurrentCenter;
-	float InterpSpeedRadius;
-	float InterpSpeedCenter;
-	float PhazeTime;
-	bool bZoneMove;
-
 
 	float DelayCompleteTime;	// 대기 완료 시간
 	float MoveCompleteTime;		// 이동 완료 시간
+	float PrevServerTime;
 
+	float DifferenceRadius;
+	float MeshScaleTo1Unit;		// 1Unit 으로 만드는 스케일값
 
+	FVector CurrentCenter;
+	float InterpSpeedRadius;
+	float InterpSpeedCenter;
 	FTimerHandle PainTimer;
 public:
 	// Called when the game starts or when spawned

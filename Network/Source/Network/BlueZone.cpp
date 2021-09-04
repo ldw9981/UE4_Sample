@@ -30,14 +30,10 @@ ABlueZone::ABlueZone()
 	MeshRadius = 50.f;
 	DifferenceRadius = 0.0f;
 	MeshScaleTo1Unit = 1.0f / MeshRadius;			// 1Unit 으로 만드는 스케일값
-	TargetRadius = 0.0f;
-	TargetCenter = FVector(0.0f,0.0f,0.0f);
+
 	CurrentCenter = FVector(0.0f, 0.0f, 0.0f);
 	InterpSpeedRadius = 0.0f;
 	InterpSpeedCenter = 0.0f;
-	PhazeTime = 5.0f;
-	bZoneMove = false;
-
 
 	SetRadius(100.0f);
 }
@@ -49,6 +45,8 @@ void ABlueZone::BeginPlay()
 	
 	CurrentCenter = GetActorLocation();
 	SetRadius(CurrentRadius);
+	
+	SetActorTickEnabled(false);	// 페이즈가 바뀔때 활성화한다.
 
 	if (UKismetSystemLibrary::IsServer(GetWorld()))
 	{		
@@ -56,38 +54,22 @@ void ABlueZone::BeginPlay()
 		{
 			ServerInfo.PhazeIndex=0;
 			ServerInfo.CircleCenter = GetLocationRandomCircle(CurrentCenter, CurrentRadius - CommonInfos[ServerInfo.PhazeIndex].CircleRadius);
-			UpdateCurrentPhazeInfo();
-		}		
+			if (UpdateCurrentPhazeInfo())
+			{
+				SetActorTickEnabled(true);
+			}		
+		}	
+		GetWorld()->GetTimerManager().SetTimer(PainTimer, this, &ABlueZone::PainOutside, 1.0f, true, 0); //1초 주기
 	}
-	//SetRadius(PhazeInfos[0].CircleRadius);
-
-	if (UKismetSystemLibrary::IsServer(GetWorld()))
-	{
-//		DelayCompleteTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds() + PhazeInfos[0].DelayDuration;
-	//	MoveCompleteTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds() + PhazeInfos[0].MoveDuration;
-
-
-		//1초 주기
-		GetWorld()->GetTimerManager().SetTimer(
-			PainTimer,
-			this,
-			&ABlueZone::PainOutside,
-			1.0f,
-			true,
-			0);
-	}	
 }
 
 // Called every frame
 void ABlueZone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	// Common
-	
+		
 	float ServerTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
-	
-	if (MoveTime<ServerTime)
+	if (MoveCompleteTime<ServerTime)
 	{
 		SetActorTickEnabled(false);
 
@@ -104,13 +86,17 @@ void ABlueZone::Tick(float DeltaTime)
 			}			
 		}		
 	}
-	else if ((DelayTime < ServerTime) && (ServerTime <= MoveTime))
+	else if ((DelayCompleteTime < ServerTime) && (ServerTime <= MoveCompleteTime))
 	{
-		CurrentRadius = FMath::FInterpConstantTo(CurrentRadius, TargetRadius, DeltaTime, InterpSpeedRadius);
-		CurrentCenter = FMath::VInterpConstantTo(CurrentCenter, TargetCenter, DeltaTime, InterpSpeedCenter);
-		SetRadius(CurrentRadius);
-		SetActorLocation(CurrentCenter);
+		if (PrevServerTime > 0)
+		{
+			CurrentRadius = FMath::FInterpConstantTo(CurrentRadius, CommonInfos[ServerInfo.PhazeIndex].CircleRadius, ServerTime - PrevServerTime, InterpSpeedRadius);
+			CurrentCenter = FMath::VInterpConstantTo(CurrentCenter, ServerInfo.CircleCenter, ServerTime - PrevServerTime, InterpSpeedCenter);
+			SetRadius(CurrentRadius);
+			SetActorLocation(CurrentCenter);
+		}
 	}	
+	PrevServerTime = ServerTime;
 	
 	/*
 	AThirdPersonMPController* PC = Cast<AThirdPersonMPController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -210,7 +196,7 @@ void ABlueZone::PainOutside()
 			continue;
 		}
 
-		UGameplayStatics::ApplyDamage(Character, 1, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(Character, CommonInfos[ServerInfo.PhazeIndex].Damage, nullptr, this, UDamageType::StaticClass());
 	}
 
 }
@@ -241,15 +227,12 @@ bool ABlueZone::UpdateCurrentPhazeInfo()
 		return false;
 	}
 
-	StartTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
-	DelayTime = StartTime + CommonInfos[index].DelayDuration;
-	MoveTime = DelayTime + CommonInfos[index].MoveDuration;	
+	float StartTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
+	DelayCompleteTime = StartTime + CommonInfos[index].DelayDuration;
+	MoveCompleteTime = DelayCompleteTime + CommonInfos[index].MoveDuration;
 
-	TargetRadius = CommonInfos[index].CircleRadius;
-	TargetCenter = ServerInfo.CircleCenter;
-
-	DifferenceRadius = (CurrentRadius - TargetRadius);
+	DifferenceRadius = (CurrentRadius - CommonInfos[index].CircleRadius);
 	InterpSpeedRadius = DifferenceRadius / CommonInfos[index].MoveDuration;		// 1초에 줄어야할 반지름 크기	
-	InterpSpeedCenter = FVector(TargetCenter - CurrentCenter).Size() / CommonInfos[index].MoveDuration;	//1초에 이동해야할 크기	
+	InterpSpeedCenter = FVector(ServerInfo.CircleCenter - CurrentCenter).Size() / CommonInfos[index].MoveDuration;	//1초에 이동해야할 크기	
 	return true;
 }
