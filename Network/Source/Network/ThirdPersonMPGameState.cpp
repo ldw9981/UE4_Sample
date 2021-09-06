@@ -2,8 +2,16 @@
 
 
 #include "ThirdPersonMPGameState.h"
+#include "Net/UnrealNetwork.h"
 
-void AThirdPersonMPGameState::MulticastBlueZoneNotifyTime_Implementation(int Min)
+AThirdPersonMPGameState::AThirdPersonMPGameState()
 {
-
+	CurrentPlayingPlayerNum = 0;
 }
+
+void AThirdPersonMPGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AThirdPersonMPGameState, CurrentPlayingPlayerNum);
+}
+

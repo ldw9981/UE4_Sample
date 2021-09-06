@@ -29,6 +29,9 @@ public:
 
 	/** Called after a successful login.  This is the first place it is safe to call replicated functions on the PlayerController. */
 	virtual void PostLogin(APlayerController* NewPlayer);
+
+
+
 };
 
 

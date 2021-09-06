@@ -15,6 +15,8 @@
 #include "ThirdPersonMPPlayerState.h"
 #include "GameFramework/GameModeBase.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
+#include "ThirdPersonMPController.h"
+#include "ThirdPersonMPGameMode.h"
 
 #define  MAX_BULLET 30
 //////////////////////////////////////////////////////////////////////////
@@ -128,16 +130,20 @@ void AThirdPersonMPCharacter::OnHealthUpdate()
 				
 		if (CurrentHealth <= 0)
 		{	
-			AController* ThirdPersonController = GetController();
+			AThirdPersonMPController* PC = GetController<AThirdPersonMPController>();
 			Destroy();	// Destroy makes Controller nullptr
-			GetWorld()->GetAuthGameMode()->RestartPlayerAtTransform(ThirdPersonController, GetActorTransform());
+
+			// respawn or spectator
+			if (PC->DecreaseLife())
+			{
+				GetWorld()->GetAuthGameMode()->RestartPlayerAtTransform(PC, GetActorTransform());
+			}
+			else
+			{
+				PC->Reset();	// NAME_Playing -> NAME_Spectating
+			}
 		}
 	}
-
-	//Functions that occur on all machines. 
-	/*
-		Any special functionality that should occur as a result of damage or death should be placed here.
-	*/
 }
 
 void AThirdPersonMPCharacter::OnBulletUpdate()

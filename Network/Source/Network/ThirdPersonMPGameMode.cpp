@@ -4,6 +4,7 @@
 #include "ThirdPersonMPCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "GameFramework/Controller.h"
+#include "ThirdPersonMPGameState.h"
 
 AThirdPersonMPGameMode::AThirdPersonMPGameMode()
 {
@@ -30,3 +31,4 @@ void AThirdPersonMPGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 }
+

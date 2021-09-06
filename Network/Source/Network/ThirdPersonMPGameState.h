@@ -16,10 +16,12 @@ class NETWORK_API AThirdPersonMPGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	
-
+	AThirdPersonMPGameState();
 public:
-	
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastBlueZoneNotifyTime(int Min);
-	virtual void MulticastBlueZoneNotifyTime_Implementation(int Min);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GamePlay", Replicated)
+	int CurrentPlayingPlayerNum;
+
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	   
 };
