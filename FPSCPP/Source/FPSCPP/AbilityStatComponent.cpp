@@ -9,13 +9,13 @@ UAbilityStatComponent::UAbilityStatComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	DefaultHealth = 100.0f;
+	Health = DefaultHealth;
 }
 // Called when the game starts
 void UAbilityStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	AActor* Owner = GetOwner();
-	ResetHealth();
 	if (Owner)
 		Owner->OnTakeAnyDamage.AddDynamic(this,&UAbilityStatComponent::OnTakeAnyDamage);
 }

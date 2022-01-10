@@ -22,7 +22,7 @@ public:
 	float DefaultHealth;
 
 	// BlueprintAssignable 이벤트 디스패처 구현
-	UPROPERTY(VisibleAnywhere,BlueprintAssignable, Category = AbilityStat)
+	UPROPERTY(BlueprintAssignable, Category = AbilityStat)
 	FOnChangeHealthSignature	OnChangeHealth;
 public:	
 	// Sets default values for this component's properties

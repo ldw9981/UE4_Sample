@@ -5,6 +5,7 @@
 #include "NavigationSystem.h"
 #include "AbilityStatComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "FaceCameraComponent.h"
 
 // Sets default values
 AMonsterCharacter::AMonsterCharacter()
@@ -16,8 +17,12 @@ AMonsterCharacter::AMonsterCharacter()
 	MoveRadius = 500.0f;
 	MoveDelay = 1.0f;
 	AbilityStat = CreateDefaultSubobject<UAbilityStatComponent>("AbilityStat");
+	
+	FaceCameraComponent = CreateDefaultSubobject<UFaceCameraComponent>("FaceCamera");
+	FaceCameraComponent->SetupAttachment(RootComponent);
+
 	TextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
-	TextRender->SetupAttachment(GetRootComponent());
+	TextRender->SetupAttachment(FaceCameraComponent);
 }
 
 // Called when the game starts or when spawned

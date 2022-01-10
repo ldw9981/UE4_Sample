@@ -9,6 +9,7 @@
 
 class UAbilityStatComponent;
 class UTextRenderComponent;
+class UFaceCameraComponent;
 
 UCLASS()
 class FPSCPP_API AMonsterCharacter : public ACharacter
@@ -18,8 +19,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Monster)
 	UAbilityStatComponent* AbilityStat;
 
-	UPROPERTY(VisibleAnywhere, Category = Monster)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	UTextRenderComponent* TextRender;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Monster)
+	UFaceCameraComponent* FaceCameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	FVector StartLocation;
