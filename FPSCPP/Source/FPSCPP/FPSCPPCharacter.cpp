@@ -14,6 +14,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/DamageType.h"
 #include "AbilityStatComponent.h"
+#include "Interactive.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -151,6 +152,7 @@ void AFPSCPPCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 
 	// Bind Laser events
 	PlayerInputComponent->BindAction("Laser", IE_Pressed, this, &AFPSCPPCharacter::OnLaser);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AFPSCPPCharacter::OnInteract);
 }
 
 void AFPSCPPCharacter::OnLaser()
@@ -183,6 +185,22 @@ void AFPSCPPCharacter::OnLaser()
 		//#include "Kismet/GameplayStatics.h"
 		UGameplayStatics::ApplyDamage(EachActor,LaserDamage,nullptr, nullptr, DamageTypeClass);
 	}
+}
+
+void AFPSCPPCharacter::OnInteract()
+{
+	TArray<AActor*> Actors;
+
+	GetCapsuleComponent()->GetOverlappingActors(Actors);
+	for (int32 i = 0; i < Actors.Num(); i++)
+	{
+		IInteractive* Interactive = Cast<IInteractive>(Actors[i]);
+		if (Interactive)
+		{
+			Interactive->NativeInteract(this);			
+		}
+	}
+
 }
 
 void AFPSCPPCharacter::OnFire()
