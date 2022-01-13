@@ -196,13 +196,13 @@ void AFPSCPPCharacter::OnInteract()
 	for (int32 i = 0; i < Actors.Num(); i++)
 	{
 		AActor* Actor = Actors[i];
-		IInteractive* Interface = Cast<IInteractive>(Actor);
+		IInteractive* Interface = Cast<IInteractive>(Actor);	
 		if (Interface)
-		{			
+		{	// C++상속 받은 경우 				
 			Interface->Execute_Interact(Actor,this);
-		}
+		}	
 		else if (Actor->GetClass()->ImplementsInterface(UInteractive::StaticClass()))
-		{
+		{	// C++상속 받지 않았지만 BP에 인터페이스 구현이 있는경우			
 			IInteractive::Execute_Interact(Actor, this);			
 		}
 	}
