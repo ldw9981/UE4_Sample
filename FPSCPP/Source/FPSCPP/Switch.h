@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -27,20 +27,16 @@ public:
 
 	virtual void InteractOnlyCpp(ACharacter* Player)
 	{
-		NativeInteract(Player);
+		Interact_Implementation(Player);
 	}
 
-	virtual void Interact_Implementation(ACharacter* Player)
-	{
-		NativeInteract(Player);
-	}
-
+	// 기본 구현을 BP에서도 호출 가능하게 한다.
 	UFUNCTION(BlueprintCallable)
-	virtual void NativeInteract(ACharacter* Player)
+	virtual void Interact_Implementation(ACharacter* Player)
 	{
 		if (PointLight)
 		{
 			PointLight->SetActorHiddenInGame(!PointLight->IsHidden());
 		}
-	}	
+	}
 };

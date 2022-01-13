@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,10 +6,9 @@
 #include "UObject/Interface.h"
 #include "Interactive.generated.h"
 
-class ACharacter;
 
 // This class does not need to be modified.
-// BP¿¡¼­ »ç¿ëÇÔ.
+// BPì—ì„œ ì‚¬ìš©í•¨.
 UINTERFACE(MinimalAPI,Blueprintable)
 class UInteractive : public UInterface
 {
@@ -17,17 +16,18 @@ class UInteractive : public UInterface
 };
 
 /**
- * 
+ *  C++,Blueprint ì—ì„œ ëª¨ë‘ ì‚¬ìš©í• ìˆ˜ ìˆëŠ” ì¸í„°í˜ì´ìŠ¤ í´ë˜ìŠ¤
+ *	C++í˜¸ì¶œì€ IInteractive::Execute_Interact( êµ¬í˜„ëœì•¡í„°, ë‹¤ë¥¸ì¸ìë“¤) ì‚¬ìš© , 
+ *  BPì—ì„œ ì‹¤í–‰ì€ ì¸í„°í˜ì´ì´ìŠ¤ ë©”ì„¸ì§€ Interact ì‚¬ìš©í•œë‹¤.
  */
 class FPSCPP_API IInteractive
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:	
-
-	// C++¿¡¼­ ±¸Çö°ú È£ÃâÀ» ÇÏ°í BP¿¡¼­ ÀçÁ¤ÀÇ °¡´É 
+public:		
+	// BPì—ì„œ ì¬êµ¬í˜„ì´ ì—†ë‹¤ë©´ Implementation ì˜ ë‚´ìš©ì´ ì‘ë™
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Interact(ACharacter* Player);
+	void Interact(ACharacter* Player);	  
 	virtual void Interact_Implementation(ACharacter* Player) = 0;
 };
