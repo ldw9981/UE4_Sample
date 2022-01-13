@@ -24,5 +24,5 @@ class FPSCPP_API IInteractiveOnlyCpp
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Interact(ACharacter* Player) = 0;
+	virtual void InteractOnlyCpp(ACharacter* Player) = 0;
 };

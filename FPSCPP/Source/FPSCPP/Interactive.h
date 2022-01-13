@@ -24,17 +24,10 @@ class FPSCPP_API IInteractive
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:
-	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
-	void BlueprintInteract(ACharacter* Player);
+public:	
 
-	virtual void NativeInteract(ACharacter* Player) 
-	{
-		UObject* Object = Cast<UObject>(this);
-		if (Object)
-		{
-			// 기본 작동은 C++에서 NativeInteract 호출을 하면 블루프린트 Interface 구현을 호출 해준다.
-			Execute_BlueprintInteract(Object, Player);
-		}		
-	}
+	// C++에서 구현과 호출을 하고 BP에서 재정의 가능 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Interact(ACharacter* Player);
+	virtual void Interact_Implementation(ACharacter* Player) = 0;
 };

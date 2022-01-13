@@ -15,6 +15,7 @@
 #include "GameFramework/DamageType.h"
 #include "AbilityStatComponent.h"
 #include "Interactive.h"
+#include "InteractiveOnlyCpp.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -194,13 +195,32 @@ void AFPSCPPCharacter::OnInteract()
 	GetCapsuleComponent()->GetOverlappingActors(Actors);
 	for (int32 i = 0; i < Actors.Num(); i++)
 	{
-		IInteractive* Interactive = Cast<IInteractive>(Actors[i]);
-		if (Interactive)
+		AActor* Actor = Actors[i];
+		IInteractive* Interface = Cast<IInteractive>(Actor);
+		if (Interface)
+		{			
+			Interface->Execute_Interact(Actor,this);
+		}
+		else if (Actor->GetClass()->ImplementsInterface(UInteractive::StaticClass()))
 		{
-			Interactive->NativeInteract(this);			
+			IInteractive::Execute_Interact(Actor, this);			
 		}
 	}
+}
 
+void AFPSCPPCharacter::OnInteractOnlyCpp()
+{
+	TArray<AActor*> Actors;
+
+	GetCapsuleComponent()->GetOverlappingActors(Actors);
+	for (int32 i = 0; i < Actors.Num(); i++)
+	{
+		IInteractiveOnlyCpp* Interface = Cast<IInteractiveOnlyCpp>(Actors[i]);
+		if (Interface)
+		{			
+			Interface->InteractOnlyCpp(this);
+		}
+	}
 }
 
 void AFPSCPPCharacter::OnFire()
