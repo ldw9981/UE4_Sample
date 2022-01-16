@@ -6,6 +6,10 @@
 #include "AbilityStatComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "FaceCameraComponent.h"
+#include "Bindable.h"
+#include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "HealthWidget.h"
 
 // Sets default values
 AMonsterCharacter::AMonsterCharacter()
@@ -18,32 +22,44 @@ AMonsterCharacter::AMonsterCharacter()
 	MoveDelay = 1.0f;
 	AbilityStat = CreateDefaultSubobject<UAbilityStatComponent>("AbilityStat");
 	
-	FaceCameraComponent = CreateDefaultSubobject<UFaceCameraComponent>("FaceCamera");
-	FaceCameraComponent->SetupAttachment(RootComponent);
+	FaceCamera = CreateDefaultSubobject<UFaceCameraComponent>("FaceCamera");
+	FaceCamera->SetupAttachment(RootComponent);
 
-	TextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
-	TextRender->SetupAttachment(FaceCameraComponent);
+	Widget = CreateDefaultSubobject<UWidgetComponent>("Widget");
+	Widget->SetupAttachment(FaceCamera);
 }
 
 // Called when the game starts or when spawned
 void AMonsterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UHealthWidget* HealthWidget = Cast<UHealthWidget>(Widget->GetUserWidgetObject());
+	if (HealthWidget !=nullptr)
+	{
+		HealthWidget->Bind(AbilityStat);
+	}	
+
+	AbilityStat->OnChangeHealth.AddDynamic(this, &AMonsterCharacter::OnChangeHealth);
+	AbilityStat->ResetHealth();
+
 	StartLocation = GetActorLocation();
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController)
 	{
-		AIController->ReceiveMoveCompleted.AddDynamic(this,&AMonsterCharacter::OnMoveCompleted);
-		MoveToAround();
+		AIController->ReceiveMoveCompleted.AddDynamic(this, &AMonsterCharacter::OnMoveCompleted);
+		MoveAround();
 	}
 
-	AbilityStat->OnChangeHealth.AddDynamic(this, &AMonsterCharacter::OnChangeHealth);
-	AbilityStat->ResetHealth();
 }
 
-void AMonsterCharacter::MoveToAround()
+void AMonsterCharacter::MoveAround()
 {
+	if (AbilityStat->IsDead())
+	{
+		return;
+	}
+
 	FVector NewLocation;
 	UNavigationSystemV1::K2_GetRandomReachablePointInRadius(GetWorld(), StartLocation, NewLocation,MoveRadius);
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -60,21 +76,38 @@ void AMonsterCharacter::DestroyDelayed()
 
 void AMonsterCharacter::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
+	if (AbilityStat->IsDead())
+	{
+		return;
+	}
+	
 	FTimerHandle Handle;
-	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMonsterCharacter::MoveToAround, MoveDelay,false);
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMonsterCharacter::MoveAround, MoveDelay, false);
+	
 }
 
 
 void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 {
+	/*
 	FText Number = FText::AsNumber(Curr);
 	TextRender->SetText(Number);
-
-	if (Curr <= 0.0f)
+	*/
+	if (AbilityStat->IsDead())
 	{
+		AAIController* AIController = Cast<AAIController>(GetController());
+		if (AIController)
+		{
+			AIController->StopMovement();
+
+		}
+		
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMonsterCharacter::DestroyDelayed, 3, false);
-	}
+	}	
 }
 
 // Called every frame

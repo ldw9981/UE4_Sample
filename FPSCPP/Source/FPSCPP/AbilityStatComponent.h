@@ -54,7 +54,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetHealth();
 
-	
+	UFUNCTION(BlueprintCallable)
+	float GetPercentHealth();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDead();
+
 
 	UFUNCTION()			// 함수 등록을 위한 키워드 사용
 	void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType

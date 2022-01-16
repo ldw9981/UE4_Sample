@@ -56,6 +56,16 @@ void UAbilityStatComponent::ResetHealth()
 	SetHealth(DefaultHealth);
 }
 
+float UAbilityStatComponent::GetPercentHealth()
+{
+	return Health / DefaultHealth;
+}
+
+bool UAbilityStatComponent::IsDead()
+{
+	return Health <= 0.0f;
+}
+
 void UAbilityStatComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage
 , const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {

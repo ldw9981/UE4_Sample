@@ -10,6 +10,7 @@
 class UAbilityStatComponent;
 class UTextRenderComponent;
 class UFaceCameraComponent;
+class UWidgetComponent;
 
 UCLASS()
 class FPSCPP_API AMonsterCharacter : public ACharacter
@@ -23,7 +24,10 @@ public:
 	UTextRenderComponent* TextRender;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Monster)
-	UFaceCameraComponent* FaceCameraComponent;
+	UFaceCameraComponent* FaceCamera;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Monster)
+	UWidgetComponent* Widget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	FVector StartLocation;
@@ -41,7 +45,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void MoveToAround();
+	void MoveAround();
 	void DestroyDelayed();
 
 	UFUNCTION()
