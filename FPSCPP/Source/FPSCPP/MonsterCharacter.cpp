@@ -6,7 +6,6 @@
 #include "AbilityStatComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "FaceCameraComponent.h"
-#include "Bindable.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "HealthWidget.h"

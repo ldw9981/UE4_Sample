@@ -32,6 +32,14 @@ void UFaceCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (AActor* Owner = GetOwner())
+	{
+		if (Owner->WasRecentlyRendered() == false)
+		{
+			return;
+		}
+	}
+
 	// ...
 	APlayerCameraManager* PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
 	if (PlayerCameraManager != nullptr)
