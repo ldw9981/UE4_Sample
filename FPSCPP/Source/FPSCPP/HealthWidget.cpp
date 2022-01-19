@@ -8,23 +8,12 @@
 
 void UHealthWidget::OnChangeHealth(float Prev, float Curr)
 {
-	if (Curr > 0.0f)
-	{
-		ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
-	}
-	else
-	{
-		ProgressBar_Health->SetVisibility(ESlateVisibility::Hidden);
-	}
-
+	ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
 }
 
 void UHealthWidget::Bind(UAbilityStatComponent* Source)
 {
-	if (Source!=nullptr)
-	{
-		AbilityStat = Source;
-		AbilityStat->OnChangeHealth.AddDynamic(this, &UHealthWidget::OnChangeHealth);
-	}
-	
+	AbilityStat = Source;
+	AbilityStat->OnChangeHealth.AddDynamic(this, &UHealthWidget::OnChangeHealth);	
+	ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
 }

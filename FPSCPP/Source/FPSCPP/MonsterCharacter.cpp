@@ -94,6 +94,9 @@ void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 	*/
 	if (AbilityStat->IsDead())
 	{
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController)
 		{
@@ -101,9 +104,8 @@ void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 
 		}
 		
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+		Widget->SetVisibility(false);
+		
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMonsterCharacter::DestroyDelayed, 3, false);
 	}	

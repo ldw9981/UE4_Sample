@@ -13,7 +13,13 @@ UCLASS()
 class FPSCPP_API AFPSCPPPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-protected:
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
+	TSubclassOf<class UUserWidget> HUDClass;
+
+	UUserWidget* HUDReference;
+
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
