@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
 #include "Blueprint/UserWidget.h"
+#include "WidgetBindInterface.h"
 
 // 캐릭터 스폰후  해야할것
 void AFPSCPPPlayerController::OnPossess(APawn* InPawn)
@@ -22,6 +23,7 @@ void AFPSCPPPlayerController::OnPossess(APawn* InPawn)
 		HUDReference = CreateWidget<UUserWidget>(this, HUDClass);
 		if (HUDReference != nullptr)
 		{
+			IWidgetBindInterface::Execute_BindSource(HUDReference, InPawn);
 			HUDReference->AddToViewport();
 		}
 	}	

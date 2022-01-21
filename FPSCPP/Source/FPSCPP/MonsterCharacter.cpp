@@ -8,6 +8,7 @@
 #include "FaceCameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "WidgetBindInterface.h"
 #include "HealthWidget.h"
 
 // Sets default values
@@ -36,7 +37,7 @@ void AMonsterCharacter::BeginPlay()
 	UHealthWidget* HealthWidget = Cast<UHealthWidget>(Widget->GetUserWidgetObject());
 	if (HealthWidget !=nullptr)
 	{
-		HealthWidget->Bind(AbilityStat);
+		IWidgetBindInterface::Execute_BindSource(HealthWidget, this);
 	}	
 
 	AbilityStat->OnChangeHealth.AddDynamic(this, &AMonsterCharacter::OnChangeHealth);
@@ -86,7 +87,7 @@ void AMonsterCharacter::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingRe
 }
 
 
-void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
+void AMonsterCharacter::OnChangeHealth(float Prev, float Curr,float Percent)
 {
 	/*
 	FText Number = FText::AsNumber(Curr);

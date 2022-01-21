@@ -52,7 +52,7 @@ protected:
 	void OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
 	UFUNCTION()
-	void OnChangeHealth(float Prev,float Curr);
+	void OnChangeHealth(float Prev,float Curr,float Percent);
 
 public:	
 	// Called every frame

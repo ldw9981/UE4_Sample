@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "WidgetBindInterface.h"
 #include "HealthWidget.generated.h"
 
 
@@ -13,7 +14,7 @@ class UAbilityStatComponent;
  * 
  */
 UCLASS()
-class FPSCPP_API UHealthWidget : public UUserWidget
+class FPSCPP_API UHealthWidget : public UUserWidget , public IWidgetBindInterface
 {
 	GENERATED_BODY()
 public:
@@ -22,12 +23,11 @@ public:
 	UAbilityStatComponent* AbilityStat;
 
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget), BlueprintReadOnly)
 	UProgressBar* ProgressBar_Health;
 
 	UFUNCTION()
-	void OnChangeHealth(float Prev, float Curr);
+	void OnChangeHealth(float Prev, float Curr, float Percent);
 
-	UFUNCTION(BlueprintCallable)
-	void Bind(UAbilityStatComponent* Source);
+	virtual void BindSource_Implementation(AActor* Source);
 };

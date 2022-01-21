@@ -6,14 +6,18 @@
 #include "AbilityStatComponent.h"
 
 
-void UHealthWidget::OnChangeHealth(float Prev, float Curr)
+void UHealthWidget::OnChangeHealth(float Prev, float Curr ,float Percent)
 {
-	ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
+	ProgressBar_Health->SetPercent(Percent);
 }
 
-void UHealthWidget::Bind(UAbilityStatComponent* Source)
+void UHealthWidget::BindSource_Implementation(AActor* Source)
 {
-	AbilityStat = Source;
-	AbilityStat->OnChangeHealth.AddDynamic(this, &UHealthWidget::OnChangeHealth);	
-	ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
+	if (Source!=nullptr)
+	{
+		AbilityStat = Cast<UAbilityStatComponent>(Source->GetComponentByClass(UAbilityStatComponent::StaticClass()));
+		AbilityStat->OnChangeHealth.AddDynamic(this, &UHealthWidget::OnChangeHealth);
+		ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
+	}
+	
 }
