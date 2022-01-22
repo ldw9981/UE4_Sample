@@ -117,6 +117,9 @@ void AFPSCPPCharacter::BeginPlay()
 
 	TestFunction1();
 	TestFunction2();
+
+	AbilityStat->OnChangeHealth.AddDynamic(this, &AFPSCPPCharacter::OnChangeHealth);
+	AbilityStat->ResetHealth();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -382,4 +385,12 @@ void AFPSCPPCharacter::TestFunction2_Implementation()
 	//UE_LOG(LogFPChar, Log, TEXT("TestFunction2_Implementation()"));
 
 	UKismetSystemLibrary::PrintString(GetWorld(), FString(TEXT("TestFunction2_Implementation()")));
+}
+
+void AFPSCPPCharacter::OnChangeHealth(float Prev, float Curr)
+{
+	if (AbilityStat->IsDead())
+	{
+		Destroy();
+	}
 }
