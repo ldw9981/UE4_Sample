@@ -87,7 +87,7 @@ void AMonsterCharacter::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingRe
 }
 
 
-void AMonsterCharacter::OnChangeHealth(float Prev, float Curr,float Percent)
+void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 {
 	/*
 	FText Number = FText::AsNumber(Curr);

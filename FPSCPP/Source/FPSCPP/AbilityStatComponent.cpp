@@ -28,7 +28,7 @@ void UAbilityStatComponent::SetHealth(float Value)
 {
 	float PrevHealth = Health;
 	Health = FMath::Clamp(Value,0.0f, DefaultHealth);
-	OnChangeHealth.Broadcast(PrevHealth, Health, Health/DefaultHealth);
+	OnChangeHealth.Broadcast(PrevHealth, Health);
 }
 void UAbilityStatComponent::TakeDamage(float Value)
 {	

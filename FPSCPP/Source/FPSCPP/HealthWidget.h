@@ -27,7 +27,7 @@ public:
 	UProgressBar* ProgressBar_Health;
 
 	UFUNCTION()
-	void OnChangeHealth(float Prev, float Curr, float Percent);
+	void OnChangeHealth(float Prev, float Curr);
 
 	virtual void BindSource_Implementation(AActor* Source);
 };

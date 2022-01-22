@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AbilityStatComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnChangeHealthSignature, float, Prev, float, Curr , float , Percent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangeHealthSignature, float, Prev, float, Curr);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FPSCPP_API UAbilityStatComponent : public UActorComponent
