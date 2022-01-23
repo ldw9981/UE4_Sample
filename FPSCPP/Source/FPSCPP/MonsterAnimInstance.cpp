@@ -13,7 +13,7 @@ UMonsterAnimInstance::UMonsterAnimInstance()
 	Speed = 0.0f;
 }
 
-void UMonsterAnimInstance::NativeInitializeAnimation()
+void UMonsterAnimInstance::NativeBeginPlay()
 {
 	AActor* Actor = GetOwningActor();
 
@@ -23,6 +23,7 @@ void UMonsterAnimInstance::NativeInitializeAnimation()
 	AbilityStat = Cast<UAbilityStatComponent>(Actor->GetComponentByClass(UAbilityStatComponent::StaticClass()));
 	CharacterMovement = Cast<UCharacterMovementComponent>(Actor->GetComponentByClass(UCharacterMovementComponent::StaticClass()));
 }
+
 
 void UMonsterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {

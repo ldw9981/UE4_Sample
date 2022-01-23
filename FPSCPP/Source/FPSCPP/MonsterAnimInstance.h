@@ -28,6 +28,7 @@ protected:
 	float Health;
 
 public:
-	virtual void NativeInitializeAnimation();
+
+	virtual void NativeBeginPlay();
 	virtual void NativeUpdateAnimation(float DeltaSeconds);
 };
