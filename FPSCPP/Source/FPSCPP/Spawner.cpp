@@ -130,6 +130,8 @@ void ASpawner::OnTimerSpawn()
 void ASpawner::Spawn()
 {
 	FVector SpawnLocation;
+	FRotator SpawnRotator;
+
 	bool result = UNavigationSystemV1::K2_GetRandomReachablePointInRadius(
 		GetWorld(),
 		GetActorLocation(),
@@ -144,9 +146,6 @@ void ASpawner::Spawn()
 
 	FActorSpawnParameters Param;
 	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	FRotator SpawnRotator;
-	SpawnRotator.Yaw = FMath::FRandRange(0.0f,360.0f);
 
 	int index = FMath::RandHelper(SpawnActorClass.Num());
 	AActor* Spawned  = GetWorld()->SpawnActor(SpawnActorClass[index],&SpawnLocation, &SpawnRotator,Param);
