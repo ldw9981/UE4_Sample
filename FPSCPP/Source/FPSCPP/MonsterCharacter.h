@@ -17,16 +17,16 @@ class FPSCPP_API AMonsterCharacter : public ACharacter
 {
 	GENERATED_BODY()
 public:	
-	UPROPERTY(VisibleAnywhere, Category = Monster)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	UAbilityStatComponent* AbilityStat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	UTextRenderComponent* TextRender;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Monster)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	UFaceCameraComponent* FaceCamera;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Monster)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)
 	UWidgetComponent* Widget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Monster)

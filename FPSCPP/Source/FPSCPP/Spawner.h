@@ -21,26 +21,26 @@ public:
 	// Sets default values for this actor's properties
 	ASpawner();
 
-	UPROPERTY(VisibleDefaultsOnly,Category="Spawn")
+	UPROPERTY(VisibleDefaultsOnly,Category = Spawn)
 	USphereComponent* Collision;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Spawn")
+	UPROPERTY(VisibleDefaultsOnly, Category = Spawn)
 	UBillboardComponent* SpriteComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	UPROPERTY(EditAnywhere, Category = Spawn)
 	TArray<TSubclassOf<AActor>> SpawnActorClass;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	UPROPERTY(EditAnywhere, Category = Spawn)
 	int SpawnMax;
 		
 	int SpawnCount;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	UPROPERTY(EditAnywhere, Category = Spawn)
 	float SpawnDelay;
 
 	FTimerHandle SpawnTimer;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn")
+	UPROPERTY(EditAnywhere, Category = Spawn)
 	bool UseRespawn;
 
 	UPROPERTY(BlueprintAssignable, Category = Spawn)
