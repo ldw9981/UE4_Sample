@@ -7,7 +7,7 @@
 #include "Spawner.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDestoryedAll);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDestoryedAll_SN);
 
 class USphereComponent;
 class UBillboardComponent;
@@ -47,7 +47,7 @@ public:
 	bool UseRespawn;
 
 	UPROPERTY(BlueprintAssignable, Category = Spawn)
-	FOnDestoryedAll OnDestroyedAll;
+	FOnDestoryedAll_SN OnDestroyedAll;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

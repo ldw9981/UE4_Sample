@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SpawnerByTargetPoint.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDestoryedAll_SPT);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDestoryedAll_ST);
 
 class USphereComponent;
 class UBillboardComponent;
@@ -44,7 +44,7 @@ public:
 	bool UseRespawn;
 
 	UPROPERTY(BlueprintAssignable, Category = Spawn)
-	FOnDestoryedAll_SPT OnDestroyedAll;
+	FOnDestoryedAll_ST OnDestroyedAll;
 
 	UPROPERTY(EditAnywhere, Category = Spawn)
 	TSubclassOf<ATargetPoint> TargetPointClass;
