@@ -9,9 +9,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDestoryedAll);
 
-
 class USphereComponent;
 class UBillboardComponent;
+
 UCLASS()
 class FPSCPP_API ASpawner : public AActor
 {
@@ -20,6 +20,9 @@ class FPSCPP_API ASpawner : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASpawner();
+
+	UPROPERTY(VisibleDefaultsOnly)
+	USceneComponent* DefaultSceneRoot;
 
 	UPROPERTY(VisibleDefaultsOnly,Category = Spawn)
 	USphereComponent* Collision;
@@ -33,7 +36,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Spawn)
 	int SpawnMax;
 		
-	int SpawnCount;
+	int Destroy;
 
 	UPROPERTY(EditAnywhere, Category = Spawn)
 	float SpawnDelay;
@@ -53,11 +56,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool IsValidSpawnActorClass();
-	void Spawn();
+	bool IsValidSettings();
+	void Spawn(const FVector& SpawnLocation);
 
 	UFUNCTION()
 	void OnSpawnActorDestroyed(AActor* Actor, EEndPlayReason::Type EndPlayReason);
 
 	void OnTimerSpawn();
+
+	void GetSpawnLocation(FVector& out);
 };

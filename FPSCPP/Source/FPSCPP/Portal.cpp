@@ -11,31 +11,31 @@
 APortal::APortal()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
+	DefaultSceneRoot = CreateDefaultSubobject<USceneComponent>("DefaultSceneRoot");
+	DefaultSceneRoot->SetMobility(EComponentMobility::Static);
+	SetRootComponent(DefaultSceneRoot);
+	
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(FName("Trigger"));
-	SetRootComponent(Collision);
+	Collision->SetupAttachment(RootComponent);
 
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetCollisionProfileName(FName("NoCollision"));
 	Mesh->SetupAttachment(RootComponent);
-
 	OnActorBeginOverlap.AddDynamic(this, &APortal::Work);
 }
 
 // Called when the game starts or when spawned
 void APortal::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay();	
 }
 
 // Called every frame
 void APortal::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APortal::Work(AActor* OverlappedActor, AActor* OtherActor)

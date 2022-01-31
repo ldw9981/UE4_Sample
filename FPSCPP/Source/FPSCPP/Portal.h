@@ -18,11 +18,15 @@ class FPSCPP_API APortal : public AActor
 public:
 	UPROPERTY(Category	= Portal, EditAnywhere)
 	FName MapPath;
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Portal )
+    
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Portal )
     UBoxComponent* Collision;
-    UPROPERTY(Category = Portal, VisibleDefaultsOnly)
+    
+	UPROPERTY(Category = Portal, VisibleDefaultsOnly)
 	UStaticMeshComponent* Mesh;
 
+	UPROPERTY(VisibleDefaultsOnly)
+	USceneComponent* DefaultSceneRoot;
 public:	
 	// Sets default values for this actor's properties
 	APortal();
