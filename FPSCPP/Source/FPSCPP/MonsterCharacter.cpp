@@ -5,7 +5,7 @@
 #include "NavigationSystem.h"
 #include "AbilityStatComponent.h"
 #include "Components/TextRenderComponent.h"
-#include "FaceCameraComponent.h"
+#include "FaceCameraWidgetComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "WidgetBindInterface.h"
@@ -21,18 +21,17 @@ AMonsterCharacter::AMonsterCharacter()
 	MoveRadius = 500.0f;
 	MoveDelay = 1.0f;
 	AbilityStat = CreateDefaultSubobject<UAbilityStatComponent>("AbilityStat");
-	
-	FaceCamera = CreateDefaultSubobject<UFaceCameraComponent>("FaceCamera");
-	FaceCamera->SetupAttachment(RootComponent);
 
-	Widget = CreateDefaultSubobject<UWidgetComponent>("Widget");
-	Widget->SetupAttachment(FaceCamera);
+	Widget = CreateDefaultSubobject<UFaceCameraWidgetComponent>("Widget");
+	Widget->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void AMonsterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Widget->SetVisibility(false);
 
 	UHealthWidget* HealthWidget = Cast<UHealthWidget>(Widget->GetUserWidgetObject());
 	if (HealthWidget !=nullptr)
@@ -41,7 +40,6 @@ void AMonsterCharacter::BeginPlay()
 	}	
 
 	AbilityStat->OnChangeHealth.AddDynamic(this, &AMonsterCharacter::OnChangeHealth);
-	AbilityStat->ResetHealth();
 
 	StartLocation = GetActorLocation();
 	AAIController* AIController = Cast<AAIController>(GetController());
@@ -93,6 +91,7 @@ void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 	FText Number = FText::AsNumber(Curr);
 	TextRender->SetText(Number);
 	*/
+	
 	if (AbilityStat->IsDead())
 	{
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -110,6 +109,10 @@ void AMonsterCharacter::OnChangeHealth(float Prev, float Curr)
 		FTimerHandle Handle;
 		GetWorld()->GetTimerManager().SetTimer(Handle, this, &AMonsterCharacter::DestroyDelayed, 3, false);
 	}	
+	else
+	{
+		Widget->SetVisibility(true);
+	}
 }
 
 // Called every frame
