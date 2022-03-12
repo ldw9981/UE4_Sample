@@ -13,6 +13,10 @@ class UWidgetBindInterface : public UInterface
 	GENERATED_BODY()
 };
 
+
+class AActor;
+class UActorComponent;
+
 /**
  * 
  */
@@ -23,6 +27,10 @@ class FPSCPP_API IWidgetBindInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void BindSource(AActor* Source);
-	virtual void BindSource_Implementation(AActor* Source) = 0;
+	void WidgetBindActor(AActor* Source);
+	virtual void WidgetBindActor_Implementation(AActor* Source) = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void WidgetBindComponent(UActorComponent* Source);
+	virtual void WidgetBindComponent_Implementation(UActorComponent* Source) = 0;
 };

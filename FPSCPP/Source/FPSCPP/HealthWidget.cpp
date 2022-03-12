@@ -11,7 +11,12 @@ void UHealthWidget::OnChangeHealth(float Prev, float Curr)
 	ProgressBar_Health->SetPercent(AbilityStat->GetPercentHealth());
 }
 
-void UHealthWidget::BindSource_Implementation(AActor* Source)
+void UHealthWidget::WidgetBindComponent_Implementation(UActorComponent* Source)
+{
+
+}
+
+void UHealthWidget::WidgetBindActor_Implementation(AActor* Source)
 {
 	if (Source!=nullptr)
 	{

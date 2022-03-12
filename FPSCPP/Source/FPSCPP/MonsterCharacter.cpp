@@ -36,7 +36,7 @@ void AMonsterCharacter::BeginPlay()
 	UHealthWidget* HealthWidget = Cast<UHealthWidget>(Widget->GetUserWidgetObject());
 	if (HealthWidget !=nullptr)
 	{
-		IWidgetBindInterface::Execute_BindSource(HealthWidget, this);
+		IWidgetBindInterface::Execute_WidgetBindActor(HealthWidget, this);
 	}	
 
 	AbilityStat->OnChangeHealth.AddDynamic(this, &AMonsterCharacter::OnChangeHealth);

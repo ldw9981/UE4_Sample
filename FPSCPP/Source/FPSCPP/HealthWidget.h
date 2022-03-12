@@ -29,5 +29,6 @@ public:
 	UFUNCTION()
 	void OnChangeHealth(float Prev, float Curr);
 
-	virtual void BindSource_Implementation(AActor* Source);
+	virtual void WidgetBindActor_Implementation(AActor* Source);
+	virtual void WidgetBindComponent_Implementation(UActorComponent* Source);
 };

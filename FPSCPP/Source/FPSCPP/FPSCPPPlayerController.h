@@ -15,13 +15,11 @@ class FPSCPP_API AFPSCPPPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
-	TSubclassOf<class UUserWidget> HUDClass;
-
-	UUserWidget* HUDReference;
-
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
 	void PawnOnEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason);
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 };

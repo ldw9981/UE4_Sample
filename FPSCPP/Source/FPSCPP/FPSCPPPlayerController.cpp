@@ -16,28 +16,12 @@ void AFPSCPPPlayerController::OnPossess(APawn* InPawn)
 	{
 		InPawn->OnEndPlay.AddDynamic(this, &AFPSCPPPlayerController::PawnOnEndPlay);
 	}
-	
-	// 위젯에 AbilityStat의 인스턴스를 업데이트 해줘야 해서 다시 위젯을 만든다.
-	if (UKismetSystemLibrary::IsValidClass(HUDClass))
-	{
-		HUDReference = CreateWidget<UUserWidget>(this, HUDClass);
-		if (HUDReference != nullptr)
-		{
-			IWidgetBindInterface::Execute_BindSource(HUDReference, InPawn);
-			HUDReference->AddToViewport();
-		}
-	}	
+
 }
 
 // 캐릭터 없어질때 해야할것
 void AFPSCPPPlayerController::PawnOnEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason)
 {
-	// 캐릭터가 없어지면 AbilityStat이 무효화 되므로 Widget제거한다.
-	if (HUDReference)
-	{
-		HUDReference->RemoveFromParent();
-	}
-
 	/** Actor가 명시적으로 파괴된 경우 */
 	if (EndPlayReason == EEndPlayReason::Destroyed)
 	{
@@ -50,4 +34,9 @@ void AFPSCPPPlayerController::PawnOnEndPlay(AActor* Actor, EEndPlayReason::Type 
 			GameModeBase->RestartPlayer(this);
 		}
 	}
+}
+
+void AFPSCPPPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
 }

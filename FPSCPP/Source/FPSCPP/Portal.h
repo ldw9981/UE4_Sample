@@ -9,16 +9,14 @@
 class UBoxComponent;
 class UStaticMeshComponent;
 class AActor;
+class AGameModeBase;
 
 UCLASS()
 class FPSCPP_API APortal : public AActor
 {
 	GENERATED_BODY()
 	
-public:
-	UPROPERTY(Category	= Portal, EditAnywhere)
-	FName MapPath;
-    
+public:    
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Portal )
     UBoxComponent* Collision;
     
@@ -27,6 +25,13 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	USceneComponent* DefaultSceneRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+	FName	LevelName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
+	TSoftClassPtr<AGameModeBase> GameModeSoftClass;
+
 public:	
 	// Sets default values for this actor's properties
 	APortal();

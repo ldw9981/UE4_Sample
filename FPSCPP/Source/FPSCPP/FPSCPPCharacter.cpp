@@ -16,6 +16,8 @@
 #include "AbilityStatComponent.h"
 #include "Interactive.h"
 #include "InteractiveOnlyCpp.h"
+#include "WidgetBindInterface.h"
+#include "GameFramework/HUD.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -120,6 +122,17 @@ void AFPSCPPCharacter::BeginPlay()
 
 	AbilityStat->OnChangeHealth.AddDynamic(this, &AFPSCPPCharacter::OnChangeHealth);
 	AbilityStat->ResetHealth();
+
+	
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController == GetController() )
+	{
+		AHUD* HUD = PlayerController->GetHUD();
+
+		IWidgetBindInterface::Execute_WidgetBindActor(HUD, this);
+
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

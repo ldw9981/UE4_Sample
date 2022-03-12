@@ -29,7 +29,7 @@ public:
 	USphereComponent* Collision;
 
 	/** Gun mesh: 1st person view (seen only by self) */
-	UPROPERTY(VisibleDefaultsOnly, Category = PickUpItem)
+	UPROPERTY(BlueprintReadWrite, Category = PickUpItem)
 	UStaticMeshComponent* ItemMesh;
 
 protected:

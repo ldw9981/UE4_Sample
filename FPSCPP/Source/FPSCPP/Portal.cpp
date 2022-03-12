@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/GameModeBase.h"
 
 // Sets default values
 APortal::APortal()
@@ -39,6 +40,12 @@ void APortal::Tick(float DeltaTime)
 }
 
 void APortal::Work(AActor* OverlappedActor, AActor* OtherActor)
-{
-	UGameplayStatics::OpenLevel(GetWorld(),MapPath);
+{	
+	FString Option;
+
+	if( GameModeSoftClass.IsValid() )
+	{
+		Option = FString::Printf(TEXT("?game=%s"), *GameModeSoftClass.ToString());
+	}
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName,true, Option);
 }

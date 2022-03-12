@@ -6,6 +6,8 @@
 #include "TextureResource.h"
 #include "CanvasItem.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 AFPSCPPHUD::AFPSCPPHUD()
 {
@@ -32,4 +34,35 @@ void AFPSCPPHUD::DrawHUD()
 	FCanvasTileItem TileItem( CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem( TileItem );
+}
+
+void AFPSCPPHUD::BeginPlay()
+{
+	Super::BeginPlay();
+		
+	if (UKismetSystemLibrary::IsValidClass(HUDWidgetClass))
+	{
+		HUDWidgetRef = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(GetWorld(),0), HUDWidgetClass);
+		if (HUDWidgetRef != nullptr)
+		{			
+			HUDWidgetRef->AddToViewport();
+		}
+	}
+}
+
+void AFPSCPPHUD::WidgetBindComponent_Implementation(UActorComponent* Source)
+{
+
+}
+
+void AFPSCPPHUD::WidgetBindActor_Implementation(AActor* Source)
+{
+	if (HUDWidgetRef != nullptr)
+	{
+		UObject* Object = Cast<UObject>(HUDWidgetRef);
+		if (Object)
+		{
+			IWidgetBindInterface::Execute_WidgetBindActor(Object, Source);
+		}
+	}
 }
