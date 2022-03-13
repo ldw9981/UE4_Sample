@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 APortal::APortal()
@@ -41,6 +42,9 @@ void APortal::Tick(float DeltaTime)
 
 void APortal::Work(AActor* OverlappedActor, AActor* OtherActor)
 {	
+	if( OtherActor != UGameplayStatics::GetPlayerCharacter(GetWorld(),0) )
+		return;
+
 	FString Option;
 
 	if( GameModeSoftClass.IsValid() )
